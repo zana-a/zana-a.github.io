@@ -1,18 +1,19 @@
 import "@/app/globals.css";
 
-import Navbar from "@/components";
+import Container from "@/components/container";
+import Navbar from "@/components/navbar";
 
 export const metadata = {
   title: "Zana Ahmad",
   description: "Personal Blog.",
 };
 
-export default function RootLayout(props: { children: JSX.Element[] }) {
+export default function RootLayout(props: { children: JSX.Element }) {
   return (
     <html lang="en">
       <body>
         <Navbar />
-        {props.children}
+        <Container>{props.children}</Container>
       </body>
     </html>
   );
