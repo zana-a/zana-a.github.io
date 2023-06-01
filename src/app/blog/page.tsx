@@ -1,3 +1,9 @@
+import Link from "next/link";
+
 export default function Blog() {
-  return <h1>Blog</h1>;
+  return (
+    <div>
+      <Link href="/blog/example-post">post</Link>
+    </div>
+  );
 }
