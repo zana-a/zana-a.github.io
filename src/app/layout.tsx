@@ -1,7 +1,7 @@
-import "@/app/globals.css";
-
 import Container from "@/components/container";
 import Navbar from "@/components/navbar";
+
+import "@/app/globals.css";
 
 export const metadata = {
   title: "Zana Ahmad",

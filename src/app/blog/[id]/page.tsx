@@ -1,40 +1,88 @@
-import path from "path";
 import fs from "fs";
+import path from "path";
 
+import Image from "next/image";
 import { remark } from "remark";
 import html from "remark-html";
+import remarkGfm from "remark-gfm";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "remark-rehype";
 import matter from "gray-matter";
+import DateFormatter from "@/components/date";
 
-import Date from "@/components/date";
+export async function getPostDataBySlug(slug: string) {
+  const location = path.join("posts", `${slug}.md`);
+  const file = fs.readFileSync(location);
 
-export async function getPostData() {
-  const fullPath = path.join("content/blog", `2023-06-01-example-post.md`);
-  const fileContents = fs.readFileSync(fullPath, "utf8");
+  const contentMatter = matter(file);
+  const contentBody = (
+    await remark()
+      .use(rehypeAutolinkHeadings)
+      .use(remarkGfm)
+      .use(html)
+      .process(contentMatter.content)
+  ).toString();
 
-  // Use gray-matter to parse the post metadata section
-  const matterResult = matter(fileContents);
-
-  // Use remark to convert markdown into HTML string
-  const processedContent = await remark()
-    .use(html)
-    .process(matterResult.content);
-  const contentHtml = processedContent.toString();
-
-  // Combine the data with the id and contentHtml
   return {
-    frontMatter: matterResult.data,
-    contentHtml,
+    contentBody,
+    ...contentMatter.data,
   };
 }
 
+function Jumbotron(props: {
+  title: string;
+  description: string;
+  author: string;
+  createdAt: string;
+  updatedAt: string;
+}) {
+  return (
+    <div className="py-8">
+      <div className="mb-4">
+        <h1 className="text-6xl font-black text-slate-800 mb-2">
+          {props.title}
+        </h1>
+        <div className="font-light text-slate-600">
+          <DateFormatter
+            className="italic"
+            dateString={new Date(props.createdAt).toISOString()}
+          />
+          <span className="mx-2">—</span>
+          <span className="font-bold">{props.author}</span>
+        </div>
+      </div>
+      <p className="text-3xl text-slate-600">{props.description}</p>
+      <div className="prose">
+        <hr className="mt-8" />
+      </div>
+    </div>
+  );
+}
+
 export default async function BlogPost() {
-  const post = await getPostData();
+  const postData = await getPostDataBySlug("example");
 
   return (
-    <div className="prose">
-      <h1>{post.frontMatter.title}</h1>
-      <Date dateString={post.frontMatter.createdAt.toISOString()} />
-      <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+    <div className="grid grid-cols-6">
+      <div className="col-span-4">
+        <Jumbotron
+          title={postData.title}
+          description={postData.description}
+          author={postData.author}
+          createdAt={postData.createdAt}
+          updatedAt={postData.updatedAt}
+        />
+        <div
+          className="prose"
+          dangerouslySetInnerHTML={{ __html: postData.contentBody }}
+        />
+      </div>
+      <div className="col-span-2">
+        <span className="text-xl block underline">Categories</span>
+        {postData.categories.map((category) => (
+          <span className="block">{category}</span>
+        ))}
+      </div>
     </div>
   );
 }
