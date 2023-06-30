@@ -1,3 +1,9 @@
+import Container from "@/components/global/container";
+
 export default function RootPage() {
-  return <div>Home</div>;
+  return (
+    <Container>
+      <h1>Hello, world!</h1>
+    </Container>
+  );
 }

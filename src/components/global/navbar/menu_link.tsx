@@ -20,14 +20,24 @@ const menuLinks: LinkMeta[] = [
   },
 ];
 
-function MenuLink(link: LinkMeta) {
+export function MenuLinks() {
   return (
-    <Link key={link.label} href={link.href}>
-      {link.label}
-    </Link>
+    <div className="space-x-4">
+      {menuLinks.map((link) => (
+        <MenuLink {...link} />
+      ))}
+    </div>
   );
 }
 
-export function MenuLinks() {
-  return menuLinks.map((link) => <MenuLink {...link} />);
+function MenuLink(link: LinkMeta) {
+  return (
+    <Link
+      key={link.label}
+      href={link.href}
+      className="hover:text-lime-600 transition-all ease-in-out"
+    >
+      {`${link.label}.`}
+    </Link>
+  );
 }
